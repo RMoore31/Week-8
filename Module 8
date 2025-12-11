@@ -1,0 +1,68 @@
+
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <iomanip>  // For formatted output
+using namespace std;
+
+class BankAccount {
+private:
+    double balance;
+
+public:
+    BankAccount(double initialBalance = 0.0) {
+        balance = initialBalance;
+    }
+
+    void deposit(double amount) {
+        if (amount > 0) {
+            balance += amount;
+            cout << "Deposited: $" << fixed << setprecision(2) << amount << endl;
+            saveTransaction("Deposit", amount);
+        } else {
+            cout << "Invalid deposit amount.\n";
+        }
+    }
+
+    void purchase(double amount) {
+        if (amount > 0 && amount <= balance) {
+            balance -= amount;
+            cout << "Purchase made: $" << fixed << setprecision(2) << amount << endl;
+            saveTransaction("Purchase", -amount);
+        } else {
+            cout << "Purchase failed: Insufficient funds or invalid amount.\n";
+        }
+    }
+
+    void printBalance() const {
+        cout << "Current Balance: $" << fixed << setprecision(2) << balance << endl;
+    }
+
+    void saveTransaction(const string& type, double amount) const {
+        ofstream file("transactions.txt", ios::app); // Append mode
+        if (file.is_open()) {
+            file << type << ": $" << fixed << setprecision(2) << amount
+                 << " | Balance: $" << balance << endl;
+            file.close();
+        } else {
+            cout << "Error: Unable to open transactions file.\n";
+        }
+    }
+};
+
+int main() {
+    BankAccount myAccount; // Create BankAccount object
+
+    cout << "=== Bank Account Test ===\n";
+
+    myAccount.deposit(500.00);
+
+    myAccount.purchase(120.50);
+    myAccount.purchase(75.25);
+
+    myAccount.printBalance();
+
+    cout << "\nAll transactions have been saved to transactions.txt\n";
+
+    return 0;
+}
